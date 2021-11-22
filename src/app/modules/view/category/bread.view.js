@@ -1,0 +1,115 @@
+import { fontStyle } from "@mui/system";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router";
+import { Footer } from "../../../components/Footer";
+import ItemCard from "../../../components/ItemCard";
+import Navbar from "../../../components/Navbar";
+import { FlexRow } from "../../../core/constant/Styles";
+import { Product } from "../../../data/models/Product.model";
+import { ApiService } from "../../services/ApiService";
+import bgbread from "../../../../assets/img/bread.png"
+import { ProductDetail } from "../../../components/ProductDetail";
+
+export const Bread = () => {
+    const history = useHistory()
+    const apiService = new ApiService()
+    const [products, setProducts] = useState([])
+    const [productDetail, setProductDetail] = useState()
+    const [showDetail, setShowDetail] = useState(false)
+
+    useEffect(async () => {
+        const res = await apiService.getProduct({ category: "bread" })
+        const data = res['data']
+        let items = []
+        for (const index in data) {
+            const product = new Product({
+                id: data[index]["ID"],
+                name: data[index]["product_name"],
+                price: data[index]["product_price"],
+                category: data[index]["product_category"],
+                image: data[index]["product_image"],
+                description: data[index]["product_description"]
+            });
+            items.push(product)
+        }
+        setProducts(items)
+    }, [])
+
+    const clickShowDetail = (product) => {
+        setProductDetail(product);
+        setShowDetail(true);
+    }
+
+    return (
+        <div style={{
+            backgroundImage: `url(${bgbread})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            width: "100%",
+        }}>
+            <Navbar />
+            <div style={{
+                width: "50vw",
+                height: "50px",
+                background: "rgba(185, 185, 159, 0.95)",
+                boxShadow: "4px 4px 4px rgba(0, 0, 0, 0.25)",
+                borderRadius: "0px 0px 25px 25px",
+                marginLeft: "auto",
+                marginRight: "auto",
+                ...FlexRow,
+                justifyContent: "space-around",
+                alignItems: "center"
+            }}>
+                <a style={{
+                    ...fontStyle,
+                    cursor: "pointer"
+                }} onClick={() => {
+                    history.replace("/cookies");
+                }} >Cookies</a>
+
+                <a style={{
+                    ...fontStyle,
+                    cursor: "pointer"
+                }} onClick={() => {
+                    history.replace("/cake");
+                }}>Cake</a>
+
+                <a style={{
+                    ...fontStyle,
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                }} onClick={() => {
+                    history.replace("/bread");
+                }}>Bread</a>
+
+                <a style={{
+                    ...fontStyle,
+                    cursor: "pointer"
+                }} onClick={() => {
+                    history.replace("/chocolates");
+                }}>Chocolates</a>
+            </div>
+
+            {showDetail ?
+                <ProductDetail product={productDetail} /> :
+                <div style={{
+                    background: "rgba(210, 193, 172, 0.9)",
+                    width: "100%",
+                    padding: "30px 0 30px 0",
+                    marginTop: "20vh",
+                    display: "grid",
+                    gridTemplateColumns: "auto auto auto auto",
+                    justifyContent: "space-around",
+                    rowGap: "30px"
+                }}>
+                    {products.map((product, i) => <div onClick={() => clickShowDetail(product)}>
+                        <ItemCard key={i} product={product} />
+                    </div>)}
+                </div>
+            }
+
+            <Footer />
+        </div>
+    );
+}
