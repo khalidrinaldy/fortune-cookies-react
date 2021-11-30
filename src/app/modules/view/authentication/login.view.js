@@ -93,7 +93,7 @@ function LoginView() {
                     <div style={{ ...FlexColumn }}>
                         <p style={{ ...labelStyle, marginTop: "10px", fontSize: "20px" }}>email</p>
                         <input type="text" style={{ ...inputStyle, width: "100%" }} value={email} onChange={e => setEmail(e.target.value)} />
-                        <p style={{ ...fontStyle, color: "red" }}>{validator.current.message('email', email, 'required|alpha')}</p>
+                        <p style={{ ...fontStyle, color: "red" }}>{validator.current.message('email', email, 'required|email')}</p>
 
                         <p style={{ ...labelStyle, marginTop: "10px", fontSize: "20px" }}>Password</p>
                         <input type="password" style={{ ...inputStyle, width: "100%" }} value={password} onChange={e => setPassword(e.target.value)} />
