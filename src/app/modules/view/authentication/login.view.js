@@ -12,7 +12,7 @@ import { BodyLogin, LoginCard } from "../../styles/authentication/login.styles";
 import { UserDataAtom } from '../../../data/provider/Atom';
 
 function LoginView() {
-    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [, forceUpdate] = useState();
     const validator = useRef(new SimpleReactValidator())
@@ -38,7 +38,7 @@ function LoginView() {
             validator.current.showMessages();
             forceUpdate(1);
         } else {
-            let res = await apiService.login(username, password)
+            let res = await apiService.login(email, password)
             console.log(res);
             if (res["error"]) {
                 setMessageDialog({
@@ -48,7 +48,6 @@ function LoginView() {
                 setOpen(true)
             } else {
                 localStorage.setItem("user", JSON.stringify({
-                    "ID": res["data"]["ID"],
                     "token": res["data"]["token"]
                 }))
                 history.replace("/")
@@ -62,7 +61,7 @@ function LoginView() {
             validator.current.showMessages();
             forceUpdate(1);
         } else {
-            let res = await apiService.register(username, password)
+            let res = await apiService.register(email, password)
             if (res["error"]) {
                 setMessageDialog({
                     "title": "Register Failed",
@@ -92,9 +91,9 @@ function LoginView() {
                 </div>
                 <div style={FlexCenterHorizontal}>
                     <div style={{ ...FlexColumn }}>
-                        <p style={{ ...labelStyle, marginTop: "10px", fontSize: "20px" }}>Username</p>
-                        <input type="text" style={{ ...inputStyle, width: "100%" }} value={username} onChange={e => setUsername(e.target.value)} />
-                        <p style={{ ...fontStyle, color: "red" }}>{validator.current.message('username', username, 'required|alpha')}</p>
+                        <p style={{ ...labelStyle, marginTop: "10px", fontSize: "20px" }}>email</p>
+                        <input type="text" style={{ ...inputStyle, width: "100%" }} value={email} onChange={e => setEmail(e.target.value)} />
+                        <p style={{ ...fontStyle, color: "red" }}>{validator.current.message('email', email, 'required|alpha')}</p>
 
                         <p style={{ ...labelStyle, marginTop: "10px", fontSize: "20px" }}>Password</p>
                         <input type="password" style={{ ...inputStyle, width: "100%" }} value={password} onChange={e => setPassword(e.target.value)} />

@@ -9,24 +9,24 @@ const API_URL = "https://fortune-cookies-apiserver.herokuapp.com"
 export class ApiService {
 
     //USER
-    async login(username, password) {
-        const data = { username: username, password: password }
+    async login(email, password) {
+        const data = { email: email, password: password }
         const res = await axios
-            .post(API_URL + `/login?username=${data.username}&password=${data.password}`, data, {
+            .post(API_URL + `/login?email=${data.email}&password=${data.password}`, data, {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }
             })
         return res.data
     }
-    async register(username, password) {
-        const data = { username: username, password: password }
+    async register(email, password) {
+        const data = { email: email, password: password }
         const res = await axios
-            .post(API_URL + `/register?username=${data.username}&password=${data.password}`, data, {
+            .post(API_URL + `/register?email=${data.email}&password=${data.password}`, data, {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" }
             });
         return res.data;
     }
-    // async register(username, password) {
-    //     const data = { username: username, password: password }
+    // async register(email, password) {
+    //     const data = { email: email, password: password }
     //     return axios.post(API_URL + `/register`, data, {
     //             headers: { "Content-Type": "application/x-www-form-urlencoded" }
     //         })
@@ -35,8 +35,9 @@ export class ApiService {
     async getUser() {
         const data = JSON.parse(localStorage.getItem('user'))
         if (data != null) {
-            const res = await axios
-                .get(API_URL + `/user/${data["ID"]}`)
+            const res = await axios.get(API_URL + `/userbytoken`, {
+                headers: {"Authorization": `Bearer ${data["token"]}`}
+            })
             return res.data
         }
         return null
@@ -49,19 +50,18 @@ export class ApiService {
     }
 
     //CART
-    async getCartList({ id, token }) {
-        const res = await axios.get(API_URL + `/cart/${id}`, {
+    async getCartList({ token }) {
+        const res = await axios.get(API_URL + `/cart`, {
             headers: { "Authorization": `Bearer ${token}` }
         })
         return res.data
     }
-    async addCartItem({ cart_id, product_id, amount, token }) {
+    async addCartItem({ product_id, amount, token }) {
         const data = {
-            cart_id: cart_id,
             product_id: product_id,
             amount: amount
         }
-        const res = await axios.post(API_URL + `/cart?cart_id=${data.cart_id}&product_id=${data.product_id}&amount=${data.amount}`, data, {
+        const res = await axios.post(API_URL + `/cart?product_id=${data.product_id}&amount=${data.amount}`, data, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": `Bearer ${token}`
@@ -69,13 +69,12 @@ export class ApiService {
         })
         return res.data
     }
-    async editCartItem({ cart_id, product_id, amount, token }) {
+    async editCartItem({ product_id, amount, token }) {
         const data = {
-            cart_id: cart_id,
             product_id: product_id,
             amount: amount
         }
-        const res = await axios.put(API_URL + `/cart/${cart_id}`, `cart_id=${data.cart_id}&product_id=${data.product_id}&amount=${data.amount}`, {
+        const res = await axios.put(API_URL + `/cart`, `product_id=${data.product_id}&amount=${data.amount}`, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": `Bearer ${token}`
@@ -83,14 +82,8 @@ export class ApiService {
         })
         return res.data
     }
-    async deleteCartItem({ cart_id, product_id, token }) {
-        // const res = await axios.delete(API_URL + `/cart/${cart_id}?product_id=${data.product_id}`, data, {
-        //     headers: {
-        //         "Content-Type": "application/x-www-form-urlencoded",
-        //         "Authorization": `Bearer ${token}`
-        //     }
-        // })
-        const res = await axios.delete(API_URL + `/cart/${cart_id}/${product_id}`, {
+    async deleteCartItem({ product_id, token }) {
+        const res = await axios.delete(API_URL + `/cart/${product_id}`, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Authorization": `Bearer ${token}`

@@ -9,7 +9,7 @@ export const IsLoggedAtom = atom({
 })
 
 //User data
-const user = new User("", "", "", "")
+const user = new User("", "", "")
 export const UserDataAtom = atom({
     key: "userData",
     default: user

@@ -33,7 +33,7 @@ function Navbar() {
                     <p style={{
                         ...FontStyle,
                         fontSize: "20px",
-                    }}>{userData.username}</p>
+                    }}>{userData.email}</p>
                 </div> :
                 <Link to="/login" style={{
                     textDecoration: "none"

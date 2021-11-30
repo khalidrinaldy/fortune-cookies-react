@@ -28,7 +28,6 @@ export const CartView = () => {
     const handleRemove = (product, index) => async() => {
         if (cartData[index].amount > 1) {
             await apiService.editCartItem({
-                cart_id: userData.id,
                 product_id: product.productId,
                 amount: product.amount - 1,
                 token: userData.token
@@ -46,7 +45,6 @@ export const CartView = () => {
 
     const handleAdd = (product, index) => async () => {
         const res = await apiService.editCartItem({
-            cart_id: userData.id,
             product_id: product.productId,
             amount: product.amount + 1,
             token: userData.token
@@ -64,7 +62,6 @@ export const CartView = () => {
 
     const removeItem = (product, index) => async () => {
         const res = await apiService.deleteCartItem({
-            cart_id: userData.id,
             product_id: product.productId,
             token: userData.token
         });

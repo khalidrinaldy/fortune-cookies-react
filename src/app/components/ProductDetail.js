@@ -72,7 +72,6 @@ export const ProductDetail = ({product}) => {
                             
                             if (!cartData.some(item => item.productName == product.name)) {
                                 const res = await apiService.addCartItem({
-                                    cart_id: userData.id,
                                     product_id: product.id,
                                     amount: amount,
                                     token: userData.token

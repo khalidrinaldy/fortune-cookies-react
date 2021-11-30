@@ -1,8 +1,7 @@
 export class User {
-    constructor(id, username, token, address) {
+    constructor(id, email, token) {
         this.id = id
-        this.username = username
+        this.email = email
         this.token = token
-        this.address = address
     }
 }
