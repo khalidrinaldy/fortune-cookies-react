@@ -1,4 +1,4 @@
-import { Switch, Route } from "react-router";
+import { Switch, Route, Redirect } from "react-router";
 import LoginView from "../modules/view/authentication/login.view";
 import { CartView } from "../modules/view/cart/cart.view";
 import { Bread } from "../modules/view/category/bread.view";
@@ -8,15 +8,61 @@ import { Cookies } from "../modules/view/category/cookies.view";
 import { HistoryView } from "../modules/view/history/history.view";
 import Dashboard from "../modules/view/home/dashboard.view";
 
+function PrivateRoute({ children, isAuthenticated, ...rest }) {
+    const user = JSON.parse(localStorage.getItem('user'))
+    return (
+        <Route
+            {...rest}
+            render={
+                ({ location }) => (
+                    user != null
+                        ? (
+                            children
+                        ) : (
+                            <Redirect
+                                to={{
+                                    pathname: '/login',
+                                    state: { from: location }
+                                }}
+                            />
+                        ))
+            }
+        />
+    );
+}
+
+function LoginRoute({ children, isAuthenticated, ...rest }) {
+    const user = JSON.parse(localStorage.getItem('user'))
+    return (
+        <Route
+            {...rest}
+            render={
+                ({ location }) => (
+                    user == null
+                        ? (
+                            children
+                        ) : (
+                            <Redirect
+                                to={{
+                                    pathname: '/',
+                                    state: { from: location }
+                                }}
+                            />
+                        ))
+            }
+        />
+    );
+}
+
 export default function Router() {
     return (
         <Switch>
             <Route exact path="/">
                 <Dashboard />
             </Route>
-            <Route path="/login">
+            <LoginRoute path="/login">
                 <LoginView />
-            </Route>
+            </LoginRoute>
             <Route path="/cookies">
                 <Cookies />
             </Route>
@@ -29,12 +75,12 @@ export default function Router() {
             <Route path="/chocolates">
                 <Chocolates />
             </Route>
-            <Route path="/cart">
+            <PrivateRoute path="/cart">
                 <CartView />
-            </Route>
-            <Route path="/history">
+            </PrivateRoute>
+            <PrivateRoute path="/history">
                 <HistoryView />
-            </Route>
+            </PrivateRoute>
         </Switch>
     );
 }
