@@ -85,6 +85,7 @@ export const ProductDetail = ({ product }) => {
                                         token: userData.token
                                     });
                                     setCartData(prev => [...prev, {
+                                        id: product.id,
                                         productName: product.name,
                                         productImage: product.image,
                                         productPrice: product.price * amount,

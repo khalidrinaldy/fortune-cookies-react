@@ -109,11 +109,9 @@ export const CartView = () => {
         }
     }
 
-    // useEffect(() => {
-    //     setIsLoading(true);
-    //     window.location.reload();
-    //     setIsLoading(false);
-    // }, [])
+    useEffect(() => {
+        console.log(cartData);
+    }, [])
 
     return (
         <div style={{

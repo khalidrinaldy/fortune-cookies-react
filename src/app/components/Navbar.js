@@ -87,7 +87,6 @@ function Navbar() {
                             style={{ cursor: "pointer" }}
                             onClick={() => {
                                 history.push("/cart");
-                                window.location.reload();
                             }}
                         />
                     </Badge>
