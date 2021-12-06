@@ -5,6 +5,7 @@ import { Bread } from "../modules/view/category/bread.view";
 import { Cake } from "../modules/view/category/cake.view";
 import { Chocolates } from "../modules/view/category/chocolates.view";
 import { Cookies } from "../modules/view/category/cookies.view";
+import { HistoryView } from "../modules/view/history/history.view";
 import Dashboard from "../modules/view/home/dashboard.view";
 
 export default function Router() {
@@ -30,6 +31,9 @@ export default function Router() {
             </Route>
             <Route path="/cart">
                 <CartView />
+            </Route>
+            <Route path="/history">
+                <HistoryView />
             </Route>
         </Switch>
     );

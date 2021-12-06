@@ -4,11 +4,12 @@ import { useHistory } from "react-router";
 import { Footer } from "../../../components/Footer";
 import ItemCard from "../../../components/ItemCard";
 import Navbar from "../../../components/Navbar";
-import { FlexRow } from "../../../core/constant/Styles";
+import { FlexColumn, FlexRow } from "../../../core/constant/Styles";
 import { Product } from "../../../data/models/Product.model";
 import { ApiService } from "../../services/ApiService";
 import bgchocolates from "../../../../assets/img/chocolates.png"
 import { ProductDetail } from "../../../components/ProductDetail";
+import { CircularProgress } from "@mui/material";
 
 export const Chocolates = () => {
     const history = useHistory()
@@ -16,9 +17,10 @@ export const Chocolates = () => {
     const [products, setProducts] = useState([])
     const [productDetail, setProductDetail] = useState()
     const [showDetail, setShowDetail] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(async () => {
-        const res = await apiService.getProduct({category: "chocolates"})
+        const res = await apiService.getProduct({ category: "chocolates" })
         const data = res['data']
         let items = []
         for (const index in data) {
@@ -33,6 +35,7 @@ export const Chocolates = () => {
             items.push(product)
         }
         setProducts(items)
+        setIsLoading(false);
     }, [])
 
     const clickShowDetail = (product) => {
@@ -41,75 +44,80 @@ export const Chocolates = () => {
     }
 
     return (
-        <div style={{
-            backgroundImage: `url(${bgchocolates})`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            width: "100%",
-        }}>
-            <Navbar />
-            <div style={{
-                width: "50vw",
-                height: "50px",
-                background: "rgba(185, 185, 159, 0.95)",
-                boxShadow: "4px 4px 4px rgba(0, 0, 0, 0.25)",
-                borderRadius: "0px 0px 25px 25px",
-                marginLeft: "auto",
-                marginRight: "auto",
-                ...FlexRow,
-                justifyContent: "space-around",
-                alignItems: "center"
-            }}>
-                <a style={{
-                    ...fontStyle,
-                    cursor: "pointer"
-                }} onClick={()=>{
-                    history.replace("/cookies");
-                }} >Cookies</a>
-
-                <a style={{
-                    ...fontStyle,
-                    cursor: "pointer"
-                }} onClick={()=>{
-                    history.replace("/cake");
-                }}>Cake</a>
-
-                <a style={{
-                    ...fontStyle,
-                    cursor: "pointer"
-                }} onClick={()=>{
-                    history.replace("/bread");
-                }}>Bread</a>
-
-                <a style={{
-                    ...fontStyle,
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                }} onClick={()=>{
-                    history.replace("/chocolates");
-                }}>Chocolates</a>
+        isLoading ?
+            <div style={{ height: "100%", width: "100%", ...FlexColumn, justifyContent: "center", alignItems: "center" }}>
+                <CircularProgress />
             </div>
-
-            {showDetail ? 
-            <ProductDetail product={productDetail} /> :
+            :
             <div style={{
-                background: "rgba(210, 193, 172, 0.9)",
+                backgroundImage: `url(${bgchocolates})`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
                 width: "100%",
-                padding: "30px 0 30px 0",
-                marginTop: "20vh",
-                display: "grid",
-                gridTemplateColumns: "auto auto auto auto",
-                justifyContent: "space-around",
-                rowGap: "30px"
             }}>
-                {products.map((product,i) => <div onClick={() => clickShowDetail(product)}>
-                    <ItemCard key={i} product={product} />
-                </div>)}
-            </div>
-            }
+                <Navbar />
+                <div style={{
+                    width: "50vw",
+                    height: "50px",
+                    background: "rgba(185, 185, 159, 0.95)",
+                    boxShadow: "4px 4px 4px rgba(0, 0, 0, 0.25)",
+                    borderRadius: "0px 0px 25px 25px",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    ...FlexRow,
+                    justifyContent: "space-around",
+                    alignItems: "center"
+                }}>
+                    <a style={{
+                        ...fontStyle,
+                        cursor: "pointer"
+                    }} onClick={() => {
+                        history.replace("/cookies");
+                    }} >Cookies</a>
 
-            <Footer />
-        </div>
+                    <a style={{
+                        ...fontStyle,
+                        cursor: "pointer"
+                    }} onClick={() => {
+                        history.replace("/cake");
+                    }}>Cake</a>
+
+                    <a style={{
+                        ...fontStyle,
+                        cursor: "pointer"
+                    }} onClick={() => {
+                        history.replace("/bread");
+                    }}>Bread</a>
+
+                    <a style={{
+                        ...fontStyle,
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                    }} onClick={() => {
+                        history.replace("/chocolates");
+                    }}>Chocolates</a>
+                </div>
+
+                {showDetail ?
+                    <ProductDetail product={productDetail} /> :
+                    <div style={{
+                        background: "rgba(210, 193, 172, 0.9)",
+                        width: "100%",
+                        padding: "30px 0 30px 0",
+                        marginTop: "20vh",
+                        display: "grid",
+                        gridTemplateColumns: "auto auto auto auto",
+                        justifyContent: "space-around",
+                        rowGap: "30px"
+                    }}>
+                        {products.map((product, i) => <div onClick={() => clickShowDetail(product)}>
+                            <ItemCard key={i} product={product} />
+                        </div>)}
+                    </div>
+                }
+
+                <Footer />
+            </div>
     );
 }

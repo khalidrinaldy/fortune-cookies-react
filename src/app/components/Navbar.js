@@ -1,7 +1,7 @@
 import { darkGreen } from "../core/constant/Colors";
 import logo from "../../assets/img/logo.png";
-import { MdLogin, MdShoppingCart, MdPerson } from "react-icons/md"
-import { FontStyle, LogoStyle } from "../core/constant/Styles";
+import { MdLogin, MdShoppingCart, MdPerson, MdHistory } from "react-icons/md"
+import { FlexRow, FontStyle, LogoStyle } from "../core/constant/Styles";
 import { useRecoilValue } from "recoil";
 import { CartDataAtom, IsLoggedAtom, UserDataAtom } from "../data/provider/Atom";
 import { Link, useHistory } from "react-router-dom";
@@ -26,9 +26,20 @@ function Navbar() {
     }
 
     return (
-        <nav style={{ backgroundColor: darkGreen, height: "150px", width: "100%", boxShadow: "4px 4px 4px rgba(0, 0, 0, 0.25)", display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: "30px", paddingRight: "30px" }}>
+        <nav style={{ 
+            backgroundColor: darkGreen, 
+            height: "150px", 
+            width: "100%", 
+            boxShadow: "4px 4px 4px rgba(0, 0, 0, 0.25)", 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center", 
+            paddingLeft: "30px", 
+            paddingRight: "30px",
+            position: "relative"
+            }}>
             {isLogged ?
-                <div style={{ display: "flex", width: "150px", cursor:"pointer" }} onClick={handleOpenMenu} >
+                <div style={{ display: "flex", minWidth: "150px", cursor: "pointer" }} onClick={handleOpenMenu} >
                     <MdPerson size="30px" color="black" />
                     <p style={{
                         ...FontStyle,
@@ -56,15 +67,29 @@ function Navbar() {
             >
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
-            <img src={logo} style={{ ...LogoStyle, cursor: "pointer" }} onClick={() => {
+            <img src={logo} style={{ ...LogoStyle, cursor: "pointer", position: "absolute", left:"0", right: "0", margin:"0 auto"}} onClick={() => {
                 history.push("/");
             }} />
             {isLogged ?
-                <div style={{ width: "150px", cursor: "pointer" }} onClick={() => {
-                    history.push("/cart");
-                }}>
+                <div style={{ width: "100px", ...FlexRow, justifyContent: "space-between", marginRight: "80px"}}>
+                    <Badge color="primary">
+                        <MdHistory
+                            size="30px"
+                            color="black"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => history.push("/history")}
+                        />
+                    </Badge>
                     <Badge color="primary" badgeContent={cartData.length} >
-                        <MdShoppingCart size="30px" color="black" />
+                        <MdShoppingCart
+                            size="30px"
+                            color="black"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                                history.push("/cart");
+                                window.location.reload();
+                            }}
+                        />
                     </Badge>
                 </div> :
                 <div style={{ width: "150px" }}></div>}

@@ -36,11 +36,11 @@ export class ApiService {
         const data = JSON.parse(localStorage.getItem('user'))
         if (data != null) {
             const res = await axios.get(API_URL + `/userbytoken`, {
-                headers: {"Authorization": `Bearer ${data["token"]}`}
+                headers: { "Authorization": `Bearer ${data["token"]}` }
             })
             return res.data
         }
-        return null
+        return data
     }
 
     //PRODUCT
@@ -90,5 +90,43 @@ export class ApiService {
             },
         })
         return res.data
+    }
+
+    //HISTORY + PURCHASE
+    async GetAllHistory({ token }) {
+        const res = await axios.get(API_URL + `/history`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        });
+        return res.data;
+    }
+    async GetHistoryDetail({ history_id, token }) {
+        const res = await axios.get(API_URL + `/history/detail/${history_id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+        });
+        return res.data;
+    }
+    async Purchase({ address, total_price, products_id, amounts, token }) {
+        const data = {
+            address: address,
+            total_price: total_price,
+            products_id: products_id,
+            amounts: amounts
+        };
+        const res = await axios
+            .post(
+                API_URL + `/purchase?address=${address}&total_price=${total_price}&products_id=${products_id}&amounts=${amounts}`,
+                data,
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+        return res.data;
     }
 }

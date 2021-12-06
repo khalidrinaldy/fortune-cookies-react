@@ -19,19 +19,17 @@ function App() {
       const data = res["data"]
       const user = new User(
         data["ID"],
-        data["username"],
-        data["token"],
-        data["address"]
+        data["email"],
+        data["token"]
       )
-      await getCart(data["ID"], data["token"]);
+      await getCart(data["token"]);
       setUserData(user)
       setIsLogged(true)
-      console.log(userData);
     }
   }
 
-  const getCart = async (id, token) => {
-    const res = await apiService.getCartList({ id: id, token: token });
+  const getCart = async (token) => {
+    const res = await apiService.getCartList({ token: token });
     const data = res["data"];
     let items = [];
     for (const index in data) {
