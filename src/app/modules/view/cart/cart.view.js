@@ -11,9 +11,10 @@ import { InfoDialog } from "../../../components/Dialog";
 import { ApiService } from "../../services/ApiService";
 import ItemCard from "../../../components/ItemCard";
 import { CircularProgress } from "@mui/material";
+import {Product} from "../../../data/models/Product.model";
 
 export const CartView = () => {
-    const [cartData, setCartData] = useRecoilState(CartDataAtom);
+    const [cartData, setCartData] = useRecoilState(CartDataAtom)
     const [userData, setUserData] = useRecoilState(UserDataAtom)
     const [openDialog, setOpenDialog] = useState(false);
     const [addressInput, setAddressInput] = useState("");
@@ -21,31 +22,47 @@ export const CartView = () => {
     const [messagePurchase, setMessagePurchase] = useState("");
     const apiService = new ApiService();
     const [isLoading, setIsLoading] = useState(false);
+    const [cart, setCart] = useState([]);
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setUserData(prev => ({
-    //         ...prev,
-    //         [name]: value
-    //     }))
-    // }
+    const getCartList = async () => {
+        setIsLoading(true);
+        const user = await JSON.parse(localStorage.getItem('user'));
+        const res = await apiService.getCartList({token: user['token']});
+        const data = res['data'];
+        let dumps = [];
+        for (const index in data) {
+            const product = new Product({
+                id: data[index]['Product_Id'],
+                name: data[index]['Product_Name'],
+                image: data[index]['Product_Image'],
+                description: data[index]['Product_Description'],
+                price: data[index]['Product_Price'],
+                category: data[index]['Product_Category'],
+                amount: data[index]['Amount']
+            });
+            dumps.push(product);
+        }
+        setCart(dumps);
+        setIsLoading(false);
+    }
 
     const handleRemove = (product, index) => async () => {
-        if (cartData[index].amount > 1) {
+        if (cart[index].amount > 1) {
             setIsLoading(true);
             await apiService.editCartItem({
-                product_id: product.productId,
+                product_id: product.id,
                 amount: product.amount - 1,
                 token: userData.token
             });
-            let arr = [...cartData];
+            let arr = [...cart];
             arr[index] = {
-                productName: cartData[index].productName,
-                productPrice: cartData[index].productPrice,
-                productImage: cartData[index].productImage,
-                amount: cartData[index].amount - 1
+                id: cart[index].id,
+                name: cart[index].name,
+                price: cart[index].price,
+                image: cart[index].image,
+                amount: cart[index].amount - 1
             }
-            setCartData(arr);
+            setCart(arr);
             setIsLoading(false);
         }
     }
@@ -53,30 +70,31 @@ export const CartView = () => {
     const handleAdd = (product, index) => async () => {
         setIsLoading(true);
         const res = await apiService.editCartItem({
-            product_id: product.productId,
+            product_id: product.id,
             amount: product.amount + 1,
             token: userData.token
         });
-        console.log(res);
-        let arr = [...cartData];
+        let arr = [...cart];
         arr[index] = {
-            productName: cartData[index].productName,
-            productPrice: cartData[index].productPrice,
-            productImage: cartData[index].productImage,
-            amount: cartData[index].amount + 1
+            id: cart[index].id,
+            name: cart[index].name,
+            price: cart[index].price,
+            image: cart[index].image,
+            amount: cart[index].amount + 1
         }
-        setCartData(arr);
+        setCart(arr);
         setIsLoading(false);
     }
 
     const removeItem = (product, index) => async () => {
         setIsLoading(true);
         const res = await apiService.deleteCartItem({
-            product_id: product.productId,
+            product_id: product.id,
             token: userData.token
         });
-        let arr = [...cartData];
+        let arr = [...cart];
         arr.splice(index, 1);
+        setCart(arr);
         setCartData(arr);
         setIsLoading(false);
     }
@@ -84,13 +102,13 @@ export const CartView = () => {
     const handlePurchase = async () => {
         setIsLoading(true);
         const user = await JSON.parse(localStorage.getItem('user'))
-        const idList = cartData.map((product, _) => {
+        const idList = cart.map((product, _) => {
             return product.id
         });
-        const amountList = cartData.map((product, _) => {
+        const amountList = cart.map((product, _) => {
             return product.amount
         });
-        const total_price = cartData.reduce((total, data) => total + (data.productPrice * data.amount), 0)
+        const total_price = cart.reduce((total, data) => total + (data.price * data.amount), 0)
         const res = await apiService.Purchase({
             address: addressInput,
             total_price: total_price,
@@ -105,12 +123,13 @@ export const CartView = () => {
         } else {
             setTitlePurchase("Congrats !");
             setMessagePurchase("Your Order Will Be Delivered");
+            setCart([]);
             setCartData([]);
         }
     }
 
     useEffect(() => {
-        console.log(cartData);
+        getCartList();
     }, [])
 
     return (
@@ -145,7 +164,7 @@ export const CartView = () => {
                             }}>Cart</p>
                         </div>
 
-                        {cartData.length == 0 ?
+                        {cart.length == 0 ?
                             <div style={{
                                 margin: "15vh auto 0 auto",
                                 ...FontStyle,
@@ -159,8 +178,8 @@ export const CartView = () => {
                                 ...FlexColumn,
                                 width: "90%"
                             }}>
-                                {cartData.map((product, index) => {
-                                    return <div name={product.productName} style={{
+                                {cart.map((product, index) => {
+                                    return <div name={product.name} style={{
                                         width: "100%",
                                         height: "150px",
                                         ...FlexRow,
@@ -177,7 +196,7 @@ export const CartView = () => {
                                             zIndex: "1",
                                             cursor: "pointer"
                                         }} onClick={(removeItem(product, index))} />
-                                        <img src={product.productImage} style={{
+                                        <img src={product.image} style={{
                                             width: "10%",
                                             height: "135px",
                                             border: "1px solid black",
@@ -191,11 +210,11 @@ export const CartView = () => {
                                             <p style={{
                                                 ...FontStyle,
                                                 fontSize: "26px"
-                                            }}>{product.productName}</p>
+                                            }}>{product.name}</p>
                                             <p style={{
                                                 ...FontStyle,
                                                 fontSize: "26px"
-                                            }}>Rp.{product.productPrice * product.amount}</p>
+                                            }}>Rp.{product.price * product.amount}</p>
                                         </div>
 
                                         <div style={{
@@ -224,7 +243,7 @@ export const CartView = () => {
                                     }}>
                                         <p style={{ margin: "0" }}>Total</p>
                                         <p style={{ margin: "0" }}>Rp.
-                                            {cartData.reduce((total, data) => total + (data.productPrice * data.amount), 0)}
+                                            {cart.reduce((total, data) => total + (data.price * data.amount), 0)}
                                         </p>
                                     </div>
 
